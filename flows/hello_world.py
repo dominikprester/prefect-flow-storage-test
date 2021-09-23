@@ -17,7 +17,7 @@ with Flow('Hello World Flow') as flow:
 
 flow.run_config = KubernetesRun()
 flow.storage = GitHub(
-    repo='https://github.com/dominikprester/prefect-flow-storage-test',
+    repo='dominikprester/prefect-flow-storage-test',
     path='flows/hello_world.py'
 )
 
