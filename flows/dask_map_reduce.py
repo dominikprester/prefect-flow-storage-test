@@ -19,13 +19,23 @@ def reduce(x):
     logger.info(f'result: {result}')
     return result
 
+@task
+def new_task():
+    logger = prefect.context.get('logger')
+    logger.info('Hello, goodbye')
+
 with Flow('Dask Map Reduce') as flow:
     data = get_data()
     mapped_result = map_fn.map(data)
     result = reduce(mapped_result)
+    new_task()
 
 flow.run_config = KubernetesRun()
-flow.executor = DaskExecutor()
+flow.executor = DaskExecutor(
+    cluster_kwargs={
+        'image': 'dprester/dask_worker_base2'
+    }
+)
 flow.storage = GitHub(
     repo='dominikprester/prefect-flow-storage-test',
     path='flows/dask_map_reduce.py'
