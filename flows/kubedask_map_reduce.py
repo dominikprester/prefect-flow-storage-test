@@ -38,7 +38,9 @@ with Flow('KubeDask Map Reduce') as flow:
     result = reduce(mapped_result)
     new_task()
 
-flow.run_config = KubernetesRun()
+flow.run_config = KubernetesRun(
+    image='dprester/kubedask_run_base'
+)
 flow.executor = DaskExecutor(
     cluster_class=get_kube_dask_cluster,
     cluster_kwargs={
