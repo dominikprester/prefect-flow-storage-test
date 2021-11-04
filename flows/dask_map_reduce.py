@@ -31,11 +31,7 @@ with Flow('Dask Map Reduce') as flow:
     new_task()
 
 flow.run_config = KubernetesRun()
-flow.executor = DaskExecutor(
-    cluster_kwargs={
-        'image': 'dprester/dask_worker_base2'
-    }
-)
+flow.executor = DaskExecutor()
 flow.storage = GitHub(
     repo='dominikprester/prefect-flow-storage-test',
     path='flows/dask_map_reduce.py'
