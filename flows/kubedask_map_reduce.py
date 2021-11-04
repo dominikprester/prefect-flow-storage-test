@@ -4,13 +4,12 @@ from prefect.executors import DaskExecutor
 from prefect.run_configs import KubernetesRun
 from prefect.storage import GitHub
 
-from dask_kubernetes import KubeCluster, make_pod_from_dict
+from dask_kubernetes import KubeCluster, make_pod_spec
 
+# could/should be wrapped in THE package?
 def get_kube_dask_cluster(image):
-    pod_specs = make_pod_from_dict({
-        'image': image
-    })
-    return KubeCluster(pod_template=pod_specs)
+    pod_spec = make_pod_spec(image=image)
+    return KubeCluster(pod_template=pod_spec)
 
 @task
 def get_data():
