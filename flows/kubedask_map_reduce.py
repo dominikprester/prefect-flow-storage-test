@@ -44,6 +44,9 @@ flow.executor = DaskExecutor(
     cluster_class=get_kube_dask_cluster,
     cluster_kwargs={
         'image': 'dprester/dask_worker_base2'
+    },
+    adapt_kwargs={
+        'maximum': 10
     }
 )
 flow.storage = GitHub(
