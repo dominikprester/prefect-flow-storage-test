@@ -13,22 +13,25 @@ def get_kube_dask_cluster(image):
 
 @task
 def task1():
+    import dummy_package.dummy_module as dm
     logger = prefect.context.get('logger')
-    var = 5
+    var = dm.dummy_function_return_5()
     logger.info(f'value: {var}')
     return var
     
 
 @task
 def task2(arg):
+    import dummy_package.dummy_module as dm
     logger = prefect.context.get('logger')
-    var = arg
+    var = dm.dummy_function_id(arg)
     logger.info(f'value: {var}')
 
 @task
 def task3():
+    import dummy_package.dummy_module as dm
     logger = prefect.context.get('logger')
-    raise ValueError('Oops, something went wrong.')
+    dm.dummy_raise_error()
     logger.error('will this print? If so, something went wrong')
 
 with Flow('Container Dependency Test') as flow:
@@ -37,9 +40,9 @@ with Flow('Container Dependency Test') as flow:
     task3()
 
 flow.run_config = KubernetesRun(
-    image='dprester/kubedask_run_base'
+    image='dprester/kubedask_run_base:v1'
 )
-flow.run_config = DaskExecutor(
+flow.executor = DaskExecutor(
     cluster_class=get_kube_dask_cluster,
     cluster_kwargs={
         'image': 'dprester/dask_worker_base2'
