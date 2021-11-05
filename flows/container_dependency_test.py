@@ -4,6 +4,13 @@ from prefect.executors import DaskExecutor
 from prefect.run_configs import KubernetesRun
 from prefect.storage import GitHub
 
+from dask_kubernetes import KubeCluster, make_pod_spec
+
+# could/should be wrapped in THE package?
+def get_kube_dask_cluster(image):
+    pod_spec = make_pod_spec(image=image)
+    return KubeCluster(pod_template=pod_spec)
+
 @task
 def task1():
     import dummy_package.dummy_module as dm
@@ -35,10 +42,16 @@ with Flow('Container Dependency Test') as flow:
     task2(res1)
     task3()
 
-flow.run_config = KubernetesRun()
+flow.run_config = KubernetesRun(
+    image='dprester/kubedask_run_base'
+)
 flow.run_config = DaskExecutor(
+    cluster_class=get_kube_dask_cluster,
     cluster_kwargs={
-        'image': 'dprester/dask_worker_base2:latest'
+        'image': 'dprester/dask_worker_base2'
+    },
+    adapt_kwargs={
+        'maximum': 10
     }
 )
 flow.storage = GitHub(
