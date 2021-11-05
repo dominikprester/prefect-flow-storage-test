@@ -3,7 +3,6 @@ from prefect import task, Flow
 from prefect.executors import DaskExecutor
 from prefect.run_configs import KubernetesRun
 from prefect.storage import GitHub
-import dummy_package.dummy_module as dm
 
 from dask_kubernetes import KubeCluster, make_pod_spec
 
@@ -15,7 +14,7 @@ def get_kube_dask_cluster(image):
 @task
 def task1():
     logger = prefect.context.get('logger')
-    var = dm.dummy_function_return_5()
+    var = 5
     logger.info(f'value: {var}')
     return var
     
@@ -23,13 +22,13 @@ def task1():
 @task
 def task2(arg):
     logger = prefect.context.get('logger')
-    var = dm.dummy_function_id(arg)
+    var = arg
     logger.info(f'value: {var}')
 
 @task
 def task3():
     logger = prefect.context.get('logger')
-    dm.dummy_raise_error()
+    raise ValueError('Oops, something went wrong.')
     logger.error('will this print? If so, something went wrong')
 
 with Flow('Container Dependency Test') as flow:
